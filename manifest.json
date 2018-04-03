@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "Automatic Replies",
+  "description": "To send automatic reply for a certain issue.",
+  "version": "1.0.0",
+  "icons": {
+    "128": "icon128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "icon128.png",
+    "default_popup": "popup.html"
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "options_page": "options.html",
+  "content_scripts":[{
+      "matches": ["https://www.facebook.com/*"],
+      "js": ["content.js"]
+  }],
+  "background" : {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions" : [
+    "tabs",
+    "https://www.facebook.com/*",
+    "storage"
+  ]
+}

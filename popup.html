@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Auto Replies</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="popup.css">
+    <script src="vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="col-xs-12 category"
+                 v-for="(subcats, cat) in categories"
+                 v-if="showCategories"
+                 @click="showSubCatMethod(cat)">
+                {{cat.replace(/_/g, " ")[0].toUpperCase() + cat.replace(/_/g, " ").slice(1)}}
+            </div>
+
+            <div class="container" v-if="showSubCategory">
+                <div class="col-xs-12 category"
+                     v-for="(issues , sub) in categories[selectedCat]"
+                     @click="showIssuesMethod(sub)">
+                    {{sub}}
+                </div>
+            </div>
+
+            <div class="container" v-if="showIssues">
+                <div class="col-xs-12 category"
+                     v-for="issue in categories[selectedCat][selectedSubCat]"
+                     @click="selectAnIssue(issue)">
+                    {{issue}}
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
