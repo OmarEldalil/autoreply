@@ -164,15 +164,29 @@ var app = new Vue({
             this.showIssues = true;
         },
         selectAnIssue(issue){
-            chrome.storage.local.get(['agentName'],function (data) {
+            chrome.storage.local.get(['agentName','whereToFill'],function (data) {
                 var fullReply = `${issue} , ${data.agentName}`,
-                    txtNode = document.createTextNode(fullReply);
+                    whereToFill = data.whereToFill;
                 chrome.tabs.query({active : true , currentWindow : true},function (tabs) {
                     chrome.tabs.executeScript(tabs[0].id,{
                         code : `
-                            var domElement = document.querySelectorAll('._5pbx.userContent._3576 p')[0];
-                            domElement.innerText= '${fullReply}';
-                            domElement.innerText = domElement.innerText.replace(/,/g , "\\r\\n")`
+                            var publicReply = document.querySelectorAll('.editor.zendesk-editor--rich-text-comment p'),res=[];    
+                            document.querySelectorAll('label').forEach(function(i){
+                                if(i.innerText == 'Reply to captain'){
+                                    res.push(i)
+                                }
+                            });
+                            if('${whereToFill}' === "replyToCaptain"){
+                                res.forEach(function(item){
+                                    item.nextElementSibling.value = '${fullReply}';
+                                    item.nextElementSibling.value = item.nextElementSibling.value.replace(/,/g , "\\r\\n")
+                                })
+                            }else{
+                                publicReply.forEach(function(item){
+                                    item.innerText= '${fullReply}';
+                                    item.innerText = item.innerText.replace(/,/g , "\\r\\n");                                                            
+                                })
+                            }`
                     });
                 })
             })
