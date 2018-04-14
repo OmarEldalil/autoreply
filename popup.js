@@ -141,6 +141,20 @@ var app = new Vue({
                     `ازيك يا كابتن,برجاء تحديد المشكلة بدقة وسردها بوضوح حتى يتسنى لنا حلها,شكراً لثقتك ,يرجى الإجابة على استطلاع الرأي التالي لمساعدتنا في تحسين جودة الخدمة:https://goo.gl/FQgfks,`,
                     `ازيك يا كابتن,نعتذر بشدة عن ما حدث وبالفعل تم ارسال الشكوى الى القسم المختص,ويرجى العلم أنه يمكن عمل بلوك للعميل وتقييمه ايضاً وإرسال شكوى بالتعليق,شكراً لثقتك ,يرجى الإجابة على استطلاع الرأي التالي لمساعدتنا في تحسين جودة الخدمة:https://goo.gl/FQgfks,`,
                 ]
+            },
+            "Quality Zendesk" : {
+                "General Reply (Minor/ first time violator)" : [
+                    `Case solved,Action: Case has been added to the cpt;s history, Once the cpt reaches a certain score of violation, He will be blocked for re-coaching`,
+                ],
+                "Cancellation" : [
+                    `Case solved,Action: penalty will be added to the captain;s portal`
+                ],
+                "Cash Collection" : [
+                    `Case solved,Action: Captain;s account is adjusted`,
+                    `No action to be taken ,Reason: Cash is already deducted from cpt;s account`,
+                    `No action to be taken,Reason: Captain added zero and trip cost equals what customer paid.. it was added negatively to captain;s portal , no need to raise a case`,
+                ],
+                "Case is not valid" : [`No action to be taken,Reason: case is not valid or verified on the GPS`]
             }
         },
         showCategories : true,
@@ -170,22 +184,37 @@ var app = new Vue({
                 chrome.tabs.query({active : true , currentWindow : true},function (tabs) {
                     chrome.tabs.executeScript(tabs[0].id,{
                         code : `
-                            var publicReply = document.querySelectorAll('.editor.zendesk-editor--rich-text-comment p'),res=[];    
+                            var publicReply = document.querySelectorAll('.editor.zendesk-editor--rich-text-comment p'),
+                                replyToCaptain=[]; 
+
+                            publicReply = Array.from(publicReply).filter(function(item){
+                                return item.clientWidth !== 0;
+                            });
+
                             document.querySelectorAll('label').forEach(function(i){
                                 if(i.innerText == 'Reply to captain'){
-                                    res.push(i)
+                                    replyToCaptain.push(i)
                                 }
                             });
+
+                            replyToCaptain = Array.from(replyToCaptain).filter(function(item){
+                                return item.clientWidth !== 0
+                                ;
+                            });
+
+                            function last(arr){
+                                return arr[arr.length-1];
+                            }
+                            publicReply= last(publicReply);
+                            replyToCaptain= last(replyToCaptain);
+
                             if('${whereToFill}' === "replyToCaptain"){
-                                res.forEach(function(item){
-                                    item.nextElementSibling.value = '${fullReply}';
-                                    item.nextElementSibling.value = item.nextElementSibling.value.replace(/,/g , "\\r\\n")
-                                })
+                                replyToCaptain.nextElementSibling.value = '${fullReply}';
+                                replyToCaptain.nextElementSibling.value = replyToCaptain.nextElementSibling.value.replace(/,/g , "\\r\\n");
                             }else{
-                                publicReply.forEach(function(item){
-                                    item.innerText= '${fullReply}';
-                                    item.innerText = item.innerText.replace(/,/g , "\\r\\n");                                                            
-                                })
+                                publicReply.innerText= '${fullReply}';
+                                publicReply.innerText = publicReply.innerText.replace(/,/g , "\\r\\n");
+                                publicReply.innerText = publicReply.innerText.replace(/;/g , "'");
                             }`
                     });
                 })

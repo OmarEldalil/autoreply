@@ -17,24 +17,22 @@
                 {{cat.replace(/_/g, " ")[0].toUpperCase() + cat.replace(/_/g, " ").slice(1)}}
             </div>
 
-            <transition name="slide-fade">
-                <div class="container" v-if="showSubCategory">
-                    <div class="col-xs-12 category"
-                         v-for="(issues , sub) in categories[selectedCat]"
-                         @click="showIssuesMethod(sub)">
-                        {{sub.replace(/_/g, " ")[0].toUpperCase() + sub.replace(/_/g, " ").slice(1)}}
-                    </div>
-                </div>    
-            </transition>
-            <transition name="slide-fade">
-                <div class="container" v-if="showIssues">
-                    <div class="col-xs-12 category"
-                        v-for="issue in categories[selectedCat][selectedSubCat]"
-                        @click="selectAnIssue(issue)">
-                        {{issue.replace(/_/g, " ")[0].toUpperCase() + issue.replace(/_/g, " ").slice(1)}}
-                    </div>
+            <div class="container" v-if="showSubCategory">
+                <div class="col-xs-12 category"
+                     v-for="(issues , sub) in categories[selectedCat]"
+                     @click="showIssuesMethod(sub)">
+                    {{sub.replace(/_/g, " ")[0].toUpperCase() + sub.replace(/_/g, " ").slice(1)}}
                 </div>
-            </transition>
+            </div>
+
+            <div class="container" v-if="showIssues">
+                <div class="col-xs-12 category"
+                     v-for="issue in categories[selectedCat][selectedSubCat]"
+                     @click="selectAnIssue(issue)">
+                    {{issue.replace(/_/g, " ")[0].toUpperCase() + issue.replace(/_/g, " ").slice(1)}}
+                </div>
+            </div>
+
 
         </div>
     </div>
